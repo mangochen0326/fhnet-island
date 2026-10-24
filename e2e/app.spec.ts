@@ -1,0 +1,100 @@
+import { expect, test, type Page } from '@playwright/test'
+
+async function start(page: Page) {
+  await page.goto('./')
+  await expect(page.getByTestId('intro')).toBeVisible()
+  await page.getByTestId('intro-skip').click()
+  await expect(page.getByTestId('intro')).toBeHidden()
+}
+
+// The index is a collapsed bottom sheet on phones.
+async function openPanel(page: Page) {
+  const panel = page.getByTestId('panel')
+  if (!(await panel.getAttribute('class'))?.includes('is-open')) await panel.getByRole('button', { name: /島嶼索引/ }).click()
+  await expect(panel).toHaveClass(/is-open/)
+}
+
+const playerPos = (page: Page) =>
+  page.evaluate(() => {
+    const { runtime } = (window as unknown as { __fhnetIsland: { runtime: { player: { x: number; z: number } } } }).__fhnetIsland
+    return { x: runtime.player.x, z: runtime.player.z }
+  })
+
+test('renders the 3D scene, demo badge and intro without errors', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', (e) => errors.push(e.message))
+  await page.goto('./')
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByTestId('demo-badge')).toContainText('Demo')
+  await page.getByTestId('intro-next').click()
+  await page.getByTestId('intro-next').click()
+  await page.getByTestId('intro-next').click()
+  await expect(page.getByTestId('intro')).toBeHidden()
+  await expect(page.getByTestId('goal-tag-mfg-agv')).toBeAttached()
+  expect(errors).toEqual([])
+})
+
+test('remembers that the intro was dismissed', async ({ page }) => {
+  await start(page)
+  await page.reload()
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByTestId('intro')).toBeHidden()
+})
+
+test('search filters the island index', async ({ page }) => {
+  await start(page)
+  await openPanel(page)
+  await page.getByTestId('search').fill('充電樁')
+  await expect(page.getByTestId('island-row-energy')).toBeVisible()
+  await expect(page.getByTestId('island-row-mfg')).toBeHidden()
+  await page.getByTestId('search').fill('完全找不到的字')
+  await expect(page.getByText('找不到')).toBeVisible()
+})
+
+test('reading a goal earns a stamp and links to the official site', async ({ page, isMobile }) => {
+  await start(page)
+  const count = page.getByTestId('stamp-count')
+  const before = await count.textContent()
+  await openPanel(page)
+  await page.getByTestId('island-row-energy').click()
+  await page.getByTestId('goal-row-energy-ev').click()
+  const card = page.getByTestId('goal-card')
+  await expect(card).toContainText('CHAdeMO')
+  await expect(card.getByRole('link')).toHaveAttribute('href', 'https://www.fhnet.com.tw/solution/renewable-energy/charging-pile')
+  await expect(count).not.toHaveText(before!)
+
+  if (isMobile) await page.getByRole('button', { name: /收合/ }).click()
+  await page.getByTestId('passport-button').click()
+  await expect(page.getByTestId('passport')).toContainText('服務 1/')
+})
+
+test('travel walks the player across bridges to the island', async ({ page }) => {
+  await start(page)
+  await openPanel(page)
+  await page.getByTestId('island-row-mfg').click()
+  await page.getByTestId('travel').click()
+  await expect.poll(async () => (await playerPos(page)).x, { timeout: 30_000 }).toBeGreaterThan(20)
+})
+
+test('keyboard WASD moves the player', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'keyboard only')
+  await start(page)
+  const before = await playerPos(page)
+  await page.locator('canvas').click({ position: { x: 5, y: 5 } })
+  await page.keyboard.down('KeyW')
+  await page.waitForTimeout(600)
+  await page.keyboard.up('KeyW')
+  const after = await playerPos(page)
+  expect(Math.hypot(after.x - before.x, after.z - before.z)).toBeGreaterThan(1)
+})
+
+test('小Paul answers quick questions', async ({ page }) => {
+  await start(page)
+  await page.getByTestId('paul-tag').click()
+  const talk = page.getByTestId('talk')
+  await expect(talk).toBeVisible()
+  await page.getByTestId('faq-contact').click()
+  await expect(page.getByTestId('talk-text')).toContainText('welcome@fhnet.com.tw')
+  await page.getByTestId('talk-close').click()
+  await expect(talk).toBeHidden()
+})
