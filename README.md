@@ -27,7 +27,7 @@ React 19、three.js（`@react-three/fiber` + `drei`）、zustand、Vite；Vitest
 pnpm install
 pnpm dev          # http://localhost:5173/fhnet-island/
 pnpm test         # Vitest
-pnpm e2e          # Playwright（首次先 pnpm exec playwright install chromium）
+pnpm e2e          # Playwright 桌機＋手機（首次先 pnpm exec playwright install chromium）；CI 只跑桌機
 pnpm build
 ```
 

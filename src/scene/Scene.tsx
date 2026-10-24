@@ -56,7 +56,7 @@ export function Scene() {
   useKeyboard()
 
   return (
-    <Canvas shadows camera={{ position: window.innerWidth > 820 ? [0, 22, 30] : [0, 34, 44], fov: 45, near: 0.5, far: 400 }} dpr={[1, 2]} data-testid="scene">
+    <Canvas shadows camera={{ position: window.innerWidth > 820 ? [0, 22, 30] : [0, 34, 44], fov: 45, near: 0.5, far: 400 }} dpr={[1, 1.5]} data-testid="scene">
       <color attach="background" args={[light.sky]} />
       <fog attach="fog" args={[light.sky, 70, 160]} />
       <ambientLight intensity={light.ambient} />

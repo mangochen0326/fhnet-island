@@ -29,7 +29,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm e2e
+      # Software WebGL on hosted runners is too slow for the high-DPR phone project; run it locally.
+      - run: pnpm e2e --project=desktop
         env:
           CI: true
       - uses: actions/upload-artifact@v4
