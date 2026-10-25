@@ -71,7 +71,7 @@ export const useGame = create<GameState>()(
         })),
       skipIntro: () => set({ introStep: null }),
 
-      openIsland: (id) => set({ selectedIslandId: id, selectedGoalId: null, panelOpen: true }),
+      openIsland: (id) => set({ selectedIslandId: id, selectedGoalId: null }),
       closeIsland: () => set({ selectedIslandId: null, selectedGoalId: null }),
       openGoal: (id) => {
         const goal = ALL_GOALS.find((g) => g.id === id)
@@ -80,7 +80,6 @@ export const useGame = create<GameState>()(
           selectedIslandId: goal.islandId,
           selectedGoalId: id,
           readGoals: addOnce(readGoals, id),
-          panelOpen: true,
         }))
       },
       closeGoal: () => set({ selectedGoalId: null }),

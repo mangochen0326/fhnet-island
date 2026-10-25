@@ -35,6 +35,7 @@ function useKeyboard() {
         const s = useGame.getState()
         if (s.talkOpen) s.closeTalk()
         else if (s.selectedGoalId) s.closeGoal()
+        else if (s.selectedIslandId) s.closeIsland()
       } else runtime.keys.add(e.code)
     }
     const up = (e: KeyboardEvent) => runtime.keys.delete(e.code)

@@ -34,6 +34,13 @@ describe('islands and goals', () => {
     expect(s.readGoals).toEqual(['energy-ev'])
   })
 
+  it('opening content leaves the index panel as it is', () => {
+    useGame.setState({ panelOpen: false })
+    useGame.getState().openIsland('city')
+    useGame.getState().openGoal('city-pole')
+    expect(useGame.getState().panelOpen).toBe(false)
+  })
+
   it('ignores unknown goal ids', () => {
     useGame.getState().openGoal('nope')
     expect(useGame.getState().selectedGoalId).toBe(null)

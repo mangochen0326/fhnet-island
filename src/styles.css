@@ -340,6 +340,81 @@ kbd {
   background: transparent;
 }
 
+/* ---- floating content window ------------------------------------------- */
+
+.content-window {
+  position: absolute;
+  top: 64px;
+  right: 16px;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  width: min(400px, calc(100% - 32px));
+  max-height: calc(100% - 128px);
+  border-radius: 16px;
+  border-top: 4px solid var(--c);
+  background: var(--card);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  animation: window-in 0.18s ease-out;
+}
+
+@keyframes window-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 4px 20px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.window-bar:active {
+  cursor: grabbing;
+}
+
+.window-bar .kicker {
+  margin: 0;
+}
+
+.window-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.window-close:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.window-body {
+  overflow-y: auto;
+  padding: 4px 20px 20px;
+}
+
+.window-body h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.index-row.is-selected {
+  background: var(--panel-2);
+  border-radius: 10px;
+}
+
 /* ---- side panel ---------------------------------------------------------- */
 
 .panel {
@@ -691,7 +766,9 @@ kbd {
   }
 
   .app:has(.panel.is-open) .interact,
-  .app:has(.panel.is-open) .top-actions {
+  .app:has(.panel.is-open) .top-actions,
+  .stage:has(.content-window) .top-actions,
+  .stage:has(.content-window) .interact {
     display: none;
   }
 
@@ -705,5 +782,20 @@ kbd {
 
   .talk-avatar {
     width: 64px;
+  }
+
+  /* Phones: the window is a fixed card above the collapsed index sheet. */
+  .content-window {
+    top: auto;
+    right: 12px;
+    left: 12px;
+    bottom: 56px;
+    width: auto;
+    max-height: 62dvh;
+    translate: none !important;
+  }
+
+  .window-bar {
+    cursor: default;
   }
 }

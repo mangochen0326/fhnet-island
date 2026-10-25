@@ -63,9 +63,25 @@ test('reading a goal earns a stamp and links to the official site', async ({ pag
   await expect(card.getByRole('link')).toHaveAttribute('href', 'https://www.fhnet.com.tw/solution/renewable-energy/charging-pile')
   await expect(count).not.toHaveText(before!)
 
+  await page.getByTestId('window-close').click()
+  await expect(page.getByTestId('island-detail')).toBeHidden()
   if (isMobile) await page.getByRole('button', { name: /收合/ }).click()
   await page.getByTestId('passport-button').click()
   await expect(page.getByTestId('passport')).toContainText('服務 1/')
+})
+
+test('island content opens in a floating window over the scene', async ({ page }) => {
+  await start(page)
+  await page.getByTestId('goal-tag-hq-profile').click()
+  const win = page.getByTestId('island-detail')
+  await expect(win).toBeVisible()
+  await expect(page.getByTestId('goal-card')).toContainText('遠傳電信')
+  // The window floats over the stage, not inside the index panel.
+  await expect(page.getByTestId('panel').getByTestId('island-detail')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(page.getByTestId('goal-card')).toBeHidden()
+  await page.keyboard.press('Escape')
+  await expect(win).toBeHidden()
 })
 
 test('travel walks the player across bridges to the island', async ({ page }) => {
