@@ -8,6 +8,7 @@ import type { Vec2 } from '../lib/world'
 import { useGame } from '../store/useGame'
 import { GOAL_SPOTS, ISLAND_POS, WORLD, npcAnchors } from './layout'
 import { Ball, Box, Cyl } from './props'
+import { clickToTalk } from './clickable'
 import { runtime } from './runtime'
 
 const WANDER_RADIUS = 1.4
@@ -114,7 +115,7 @@ function Resident({ npc, home, seed }: { npc: Npc; home: Vec2; seed: number }) {
 
   return (
     <group ref={ref} position={[home.x, 0, home.z]}>
-      <group ref={body}>
+      <group ref={body} {...clickToTalk(() => openNpc(npc.id))}>
         <Figure npc={npc} seed={seed} />
       </group>
       <Html position={[0, 2.3, 0]} center zIndexRange={[35, 0]}>

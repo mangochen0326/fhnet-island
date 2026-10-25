@@ -25,6 +25,7 @@ export function Player() {
   const controls = useThree((s) => s.controls) as unknown as { target: Vector3 } | null
   const moveRequest = useGame((s) => s.moveRequest)
   const forward = useRef(new Vector3())
+  const wasTalking = useRef(false)
 
   useEffect(() => {
     if (!moveRequest) return
@@ -40,6 +41,13 @@ export function Player() {
     if (!g) return
     const dt = Math.min(rawDt, 0.1)
     const before = runtime.player.clone()
+
+    // A dialog that just opened cancels any walk in progress, so the visitor stays put
+    // while reading; moving again afterwards closes the dialog.
+    const game = useGame.getState()
+    const talking = game.talkOpen || game.talkNpcId !== null
+    if (talking && !wasTalking.current) runtime.path = []
+    wasTalking.current = talking
 
     // Keyboard input is relative to the camera heading.
     let ix = 0
@@ -75,6 +83,11 @@ export function Player() {
         runtime.player.set(before.x + (dx / d) * stepLen, 0, before.z + (dz / d) * stepLen)
       }
       moving = true
+    }
+
+    if (moving && talking) {
+      if (game.talkOpen) game.closeTalk()
+      if (game.talkNpcId) game.closeNpc()
     }
 
     const delta = runtime.player.clone().sub(before)

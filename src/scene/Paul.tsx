@@ -6,6 +6,7 @@ import { ISLANDS } from '../data/islands'
 import type { Vec2 } from '../lib/world'
 import { useGame } from '../store/useGame'
 import { WORLD, soapboxSpot } from './layout'
+import { clickToTalk } from './clickable'
 import { runtime } from './runtime'
 import { Ball, Box, Cyl } from './props'
 
@@ -70,7 +71,7 @@ export function Paul() {
   return (
     <group ref={ref}>
       <Box p={[0, 0.15, 0]} s={[1.1, 0.3, 0.8]} c="#8a6a4a" />
-      <group ref={figure}>
+      <group ref={figure} {...clickToTalk(() => useGame.getState().openTalk())}>
         <PaulFigure arm={arm} />
       </group>
       <Html position={[0, 3.1, 0]} center zIndexRange={[40, 0]}>

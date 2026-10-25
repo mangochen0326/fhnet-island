@@ -142,3 +142,36 @@ test('return to map zooms out of the zone', async ({ page, isMobile }) => {
   await page.getByTestId('show-map').click()
   await expect(page.getByTestId('zone-hud')).toContainText('全島地圖')
 })
+
+test('moving closes the open dialog without pressing goodbye', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'keyboard only')
+  await start(page)
+  await page.getByTestId('paul-tag').click()
+  await expect(page.getByTestId('talk')).toBeVisible()
+  await page.keyboard.down('KeyS')
+  await expect(page.getByTestId('talk')).toBeHidden()
+  await page.keyboard.up('KeyS')
+
+  await page.getByTestId('passport-button').click()
+  await page.getByTestId('passport').getByRole('button', { name: /人資夥伴/ }).click()
+  await expect(page.getByTestId('npc-talk')).toBeVisible()
+  await page.keyboard.down('KeyW')
+  await expect(page.getByTestId('npc-talk')).toBeHidden()
+  await page.keyboard.up('KeyW')
+})
+
+test('opening a dialog stops a walk in progress', async ({ page, isMobile }) => {
+  await start(page)
+  await openPanel(page)
+  await page.getByTestId('island-row-mfg').click()
+  await page.getByTestId('travel').click()
+  await page.getByTestId('window-close').click()
+  if (isMobile) await page.getByRole('button', { name: /收合/ }).click()
+  await page.getByTestId('passport-button').click()
+  await page.getByTestId('passport').getByRole('button', { name: /人資夥伴/ }).click()
+  // The dialog stays open and the visitor stays put because the walk was cancelled.
+  const pos = await playerPos(page)
+  await page.waitForTimeout(1500)
+  await expect(page.getByTestId('npc-talk')).toBeVisible()
+  expect(await playerPos(page)).toEqual(pos)
+})
