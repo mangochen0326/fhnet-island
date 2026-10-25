@@ -72,9 +72,11 @@ test('reading a goal earns a stamp and links to the official site', async ({ pag
 
 test('island content opens in a floating window over the scene', async ({ page }) => {
   await start(page)
-  await page.getByTestId('goal-tag-hq-profile').click()
+  await openPanel(page)
+  await page.getByTestId('island-row-hq').click()
   const win = page.getByTestId('island-detail')
   await expect(win).toBeVisible()
+  await win.getByTestId('goal-row-hq-profile').click()
   await expect(page.getByTestId('goal-card')).toContainText('遠傳電信')
   // The window floats over the stage, not inside the index panel.
   await expect(page.getByTestId('panel').getByTestId('island-detail')).toHaveCount(0)
