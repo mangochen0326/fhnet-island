@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ALL_GOALS, ISLANDS } from '../data/islands'
 import { INTRO_STEPS } from '../data/intro'
-import { progress, useGame } from './useGame'
+import { NPCS } from '../data/npcs'
+import { progress, useGame, zoneProgress } from './useGame'
 
 const initial = useGame.getState()
 
@@ -83,6 +84,15 @@ describe('interact', () => {
     expect(useGame.getState().selectedGoalId).toBe('mfg-agv')
   })
 
+  it('talks to a nearby NPC and remembers it once', () => {
+    useGame.getState().setNearby({ type: 'npc', id: 'mfg-agv' })
+    useGame.getState().interact()
+    useGame.getState().interact()
+    const s = useGame.getState()
+    expect(s.talkNpcId).toBe('mfg-agv')
+    expect(s.talkedNpcs).toEqual(['mfg-agv'])
+  })
+
   it('does nothing when nothing is nearby', () => {
     useGame.getState().interact()
     const s = useGame.getState()
@@ -94,16 +104,57 @@ describe('progress', () => {
   it('counts visited islands and read goals against totals', () => {
     useGame.getState().visitIsland('hq')
     useGame.getState().openGoal('hq-profile')
+    useGame.getState().openNpc('hq-hr')
     expect(progress(useGame.getState())).toEqual({
       islands: 1,
       islandTotal: ISLANDS.length,
       goals: 1,
       goalTotal: ALL_GOALS.length,
+      npcs: 1,
+      npcTotal: NPCS.length,
     })
   })
 
   it('persists progress to localStorage', () => {
     useGame.getState().openGoal('esg-bio')
     expect(localStorage.getItem('fhnet-island')).toContain('esg-bio')
+  })
+})
+
+describe('npc talks', () => {
+  it('opening an NPC closes the Paul dialog and vice versa', () => {
+    useGame.getState().openTalk()
+    useGame.getState().openNpc('city-planner')
+    expect(useGame.getState().talkOpen).toBe(false)
+    useGame.getState().openTalk()
+    expect(useGame.getState().talkNpcId).toBe(null)
+  })
+
+  it('ignores unknown NPC ids', () => {
+    useGame.getState().openNpc('ghost')
+    expect(useGame.getState().talkNpcId).toBe(null)
+  })
+})
+
+describe('zones', () => {
+  it('stepping onto an island enters its zone view', () => {
+    useGame.getState().setCurrentIsland('energy')
+    const s = useGame.getState()
+    expect(s.view).toEqual({ mode: 'zone', islandId: 'energy', seq: 1 })
+  })
+
+  it('leaving an island keeps the zone view until the map is requested', () => {
+    useGame.getState().setCurrentIsland('energy')
+    useGame.getState().setCurrentIsland(null)
+    expect(useGame.getState().view.mode).toBe('zone')
+    useGame.getState().showMap()
+    expect(useGame.getState().view).toEqual({ mode: 'map', islandId: null, seq: 2 })
+  })
+
+  it('reports zone progress for NPCs and goals', () => {
+    useGame.getState().openNpc('mfg-qc')
+    useGame.getState().openGoal('mfg-ai')
+    useGame.getState().openGoal('city-pole')
+    expect(zoneProgress(useGame.getState(), 'mfg')).toEqual({ npcs: 1, npcTotal: 3, goals: 1, goalTotal: 4 })
   })
 })

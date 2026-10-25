@@ -149,7 +149,7 @@ a {
 .help-bar {
   position: absolute;
   left: 16px;
-  bottom: 16px;
+  top: 150px;
   margin: 0;
   color: var(--muted);
 }
@@ -214,7 +214,7 @@ a {
 .interact {
   position: absolute;
   left: 50%;
-  bottom: 64px;
+  bottom: 72px;
   transform: translateX(-50%);
   border: 0;
   border-radius: 999px;
@@ -246,6 +246,84 @@ kbd {
   background: var(--accent);
   color: #1b1b1b;
   font-weight: 700;
+}
+
+/* ---- zone mission card ---------------------------------------------------- */
+
+.zone-hud {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 60;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  padding: 8px 10px 8px 16px;
+  border-radius: 14px;
+  border-left: 4px solid var(--c, var(--accent));
+  background: var(--card);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.zone-hud .ghost {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.zone-hud.is-map {
+  border-left-color: var(--line);
+  color: var(--muted);
+}
+
+.chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--panel-2);
+}
+
+.chip.done {
+  background: var(--accent);
+  color: #1b1b1b;
+}
+
+.npc-tag {
+  white-space: nowrap;
+  border: 0;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #18262a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.npc-tag.is-talked {
+  background: rgba(240, 162, 74, 0.95);
+}
+
+.npc-avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  flex: none;
+  align-self: flex-end;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  font-size: 36px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.stamp-goals button.npc {
+  border-style: dashed;
+}
+
+/* Dialogs take the bottom of the stage; the mission card steps aside. */
+.stage:has(.talk) .zone-hud {
+  display: none;
 }
 
 /* ---- talk dialog --------------------------------------------------------- */
@@ -760,8 +838,7 @@ kbd {
   }
 
   .top-actions {
-    top: auto;
-    bottom: 56px;
+    top: 124px;
     right: 12px;
   }
 
@@ -778,6 +855,23 @@ kbd {
 
   .talk {
     bottom: 56px;
+  }
+
+  .zone-hud {
+    bottom: 52px;
+    flex-wrap: wrap;
+    justify-content: center;
+    white-space: normal;
+    font-size: 12px;
+  }
+
+  .zone-hud .ghost {
+    display: none;
+  }
+
+  .stage:has(.content-window) .zone-hud,
+  .app:has(.panel.is-open) .zone-hud {
+    display: none;
   }
 
   .talk-avatar {

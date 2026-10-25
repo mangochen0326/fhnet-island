@@ -12,7 +12,7 @@ React 19、three.js（`@react-three/fiber` + `drei`）、zustand、Vite；Vitest
 
 | 目錄 | 內容 |
 |---|---|
-| `src/data/` | 島嶼、服務重點、小Paul 問答、導覽文字 |
+| `src/data/` | 島嶼、服務重點、各區域 NPC 對話、小Paul 問答、導覽文字 |
 | `src/lib/world.ts` | 純幾何：可行走區域、島嶼判定、跨橋路徑（有單元測試） |
 | `src/store/useGame.ts` | zustand 狀態：選取、護照集章、時段、對話（進度存 localStorage） |
 | `src/scene/` | 3D 場景：島嶼、主題建築、橋、玩家、小Paul |
@@ -32,6 +32,10 @@ pnpm build
 ```
 
 ## 部署
+
+- Vercel：連動此 repo 後自動部署（`vercel.json`；在 Vercel 上 base 自動為 `/`）。
+- GitHub Pages：見下方。
+
 
 推到 `main` 後，`.github/workflows/pages.yml` 會跑型別檢查、單元與 E2E 測試，再部署到 GitHub Pages（repo 的 Settings → Pages → Source 需設為 GitHub Actions）。若 repo 名稱不是 `fhnet-island`，以 `BASE_PATH=/<repo>/` 建置。
 

@@ -10,6 +10,7 @@ import { Ball, Box, Cyl } from './props'
 const SPEED = 7
 const PAUL_RANGE = 3.2
 const GOAL_RANGE = 2.8
+const NPC_RANGE = 2.4
 const MOVE_KEYS: Record<string, [number, number]> = {
   KeyW: [0, 1], ArrowUp: [0, 1],
   KeyS: [0, -1], ArrowDown: [0, -1],
@@ -88,8 +89,15 @@ export function Player() {
     // Zone and proximity checks feed the HUD prompt and passport.
     const s = useGame.getState()
     s.setCurrentIsland(WORLD.islandAt(runtime.player.x, runtime.player.z))
+    let npc: { id: string; d: number } | null = null
+    for (const [id, pos] of runtime.npcs) {
+      const d = pos.distanceTo(runtime.player)
+      if (d < NPC_RANGE && (!npc || d < npc.d)) npc = { id, d }
+    }
     if (runtime.player.distanceTo(runtime.paul) < PAUL_RANGE) {
       s.setNearby({ type: 'paul', id: 'paul' })
+    } else if (npc) {
+      s.setNearby({ type: 'npc', id: npc.id })
     } else {
       let best: { id: string; d: number } | null = null
       for (const spot of GOAL_SPOTS) {

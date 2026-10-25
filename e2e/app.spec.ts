@@ -116,3 +116,29 @@ test('小Paul answers quick questions', async ({ page }) => {
   await page.getByTestId('talk-close').click()
   await expect(talk).toBeHidden()
 })
+
+test('zone residents talk about their services and count toward the zone mission', async ({ page }) => {
+  await start(page)
+  // The visitor starts on the HQ island, so its zone mission is shown.
+  await expect(page.getByTestId('zone-hud')).toContainText('富鴻網總部')
+  await expect(page.getByTestId('zone-npcs')).toHaveText('街坊探索 0/2')
+
+  await page.getByTestId('passport-button').click()
+  await page.getByTestId('passport').getByRole('button', { name: /人資夥伴/ }).click()
+  const talk = page.getByTestId('npc-talk')
+  await expect(talk).toContainText('彈性工時')
+  await page.getByTestId('npc-next').click()
+  await expect(page.getByTestId('npc-text')).toContainText('hr@fhnet.com.tw')
+  await page.getByTestId('npc-goal').click()
+  await expect(talk).toBeHidden()
+  await expect(page.getByTestId('goal-card')).toContainText('遠傳電信')
+  await page.getByTestId('window-close').click()
+  await expect(page.getByTestId('zone-npcs')).toHaveText('街坊探索 1/2')
+})
+
+test('return to map zooms out of the zone', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'zone buttons are desktop-only')
+  await start(page)
+  await page.getByTestId('show-map').click()
+  await expect(page.getByTestId('zone-hud')).toContainText('全島地圖')
+})

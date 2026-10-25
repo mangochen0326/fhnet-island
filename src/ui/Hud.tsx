@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { FAQ } from '../data/faq'
 import { ALL_GOALS, ISLANDS, SITE, islandById } from '../data/islands'
 import { INTRO_STEPS } from '../data/intro'
-import { progress, useGame, type TimeOfDay } from '../store/useGame'
+import { NPCS, npcsOf } from '../data/npcs'
+import { progress, useGame, zoneProgress, type TimeOfDay } from '../store/useGame'
 
 const BASE = import.meta.env.BASE_URL
 const TIMES: [TimeOfDay, string, string][] = [
@@ -41,14 +42,15 @@ export function TitleCard() {
 export function TopActions() {
   const visitedIslands = useGame((s) => s.visitedIslands)
   const readGoals = useGame((s) => s.readGoals)
-  const p = progress({ visitedIslands, readGoals })
+  const talkedNpcs = useGame((s) => s.talkedNpcs)
+  const p = progress({ visitedIslands, readGoals, talkedNpcs })
   const setPassportOpen = useGame((s) => s.setPassportOpen)
   return (
     <div className="top-actions">
       <button type="button" onClick={() => setPassportOpen(true)} data-testid="passport-button">
         🛂 服務護照{' '}
         <span data-testid="stamp-count">
-          {p.islands + p.goals} / {p.islandTotal + p.goalTotal}
+          {p.islands + p.goals + p.npcs} / {p.islandTotal + p.goalTotal + p.npcTotal}
         </span>
       </button>
     </div>
@@ -62,12 +64,14 @@ export function HelpBar() {
 export function InteractPrompt() {
   const nearby = useGame((s) => s.nearby)
   const interact = useGame((s) => s.interact)
-  const busy = useGame((s) => s.talkOpen || s.introStep !== null)
+  const busy = useGame((s) => s.talkOpen || s.talkNpcId !== null || s.introStep !== null)
   if (!nearby || busy) return null
   const label =
     nearby.type === 'paul'
       ? '與小Paul 對話'
-      : (() => {
+      : nearby.type === 'npc'
+        ? `與${NPCS.find((n) => n.id === nearby.id)?.role ?? ''}對話`
+        : (() => {
           const g = ALL_GOALS.find((x) => x.id === nearby.id)
           return g ? `查看「${g.title}」` : ''
         })()
@@ -196,18 +200,20 @@ export function Passport() {
   const setOpen = useGame((s) => s.setPassportOpen)
   const visited = useGame((s) => s.visitedIslands)
   const read = useGame((s) => s.readGoals)
+  const talked = useGame((s) => s.talkedNpcs)
+  const openNpc = useGame((s) => s.openNpc)
   const reset = useGame((s) => s.resetProgress)
   const openGoal = useGame((s) => s.openGoal)
   if (!open) return null
-  const p = progress({ visitedIslands: visited, readGoals: read })
-  const complete = p.islands === p.islandTotal && p.goals === p.goalTotal
+  const p = progress({ visitedIslands: visited, readGoals: read, talkedNpcs: talked })
+  const complete = p.islands === p.islandTotal && p.goals === p.goalTotal && p.npcs === p.npcTotal
   return (
     <div className="modal-backdrop" onClick={() => setOpen(false)}>
       <div className="modal passport" role="dialog" aria-modal="true" aria-label="服務護照" onClick={(e) => e.stopPropagation()} data-testid="passport">
         <p className="kicker">SERVICE PASSPORT</p>
         <h2>服務護照</h2>
         <p className="muted">
-          登島 {p.islands}/{p.islandTotal} · 服務 {p.goals}/{p.goalTotal}
+          登島 {p.islands}/{p.islandTotal} · 服務 {p.goals}/{p.goalTotal} · 對話 {p.npcs}/{p.npcTotal}
           {complete && ' · 🎉 全部集滿，歡迎來信 welcome@fhnet.com.tw 聊聊你的需求！'}
         </p>
         <div className="stamps">
@@ -230,6 +236,19 @@ export function Passport() {
                     }}
                   >
                     {g.title}
+                  </button>
+                ))}
+                {npcsOf(island.id).map((n) => (
+                  <button
+                    key={n.id}
+                    type="button"
+                    className={`npc${talked.includes(n.id) ? ' on' : ''}`}
+                    onClick={() => {
+                      openNpc(n.id)
+                      setOpen(false)
+                    }}
+                  >
+                    💬 {n.role}
                   </button>
                 ))}
               </div>
@@ -269,4 +288,93 @@ export function StampToast() {
       {msg}
     </div>
   ) : null
+}
+
+// Zone mission card shown while the camera is zoomed into one business zone.
+export function ZoneHud() {
+  const view = useGame((s) => s.view)
+  const readGoals = useGame((s) => s.readGoals)
+  const talkedNpcs = useGame((s) => s.talkedNpcs)
+  const { showMap, openIsland } = useGame.getState()
+  const island = view.mode === 'zone' && view.islandId ? islandById(view.islandId) : undefined
+  if (!island) {
+    return view.seq > 0 ? (
+      <div className="zone-hud is-map" data-testid="zone-hud">
+        <span className="zone-title">全島地圖 · 點選島嶼或走過去進入區域</span>
+      </div>
+    ) : null
+  }
+  const z = zoneProgress({ readGoals, talkedNpcs }, island.id)
+  return (
+    <div className="zone-hud" style={{ '--c': island.color } as CSSProperties} data-testid="zone-hud">
+      <span className="zone-title">
+        任務區域 · <strong>{island.name}</strong>
+      </span>
+      <span className={`chip${z.npcs === z.npcTotal ? ' done' : ''}`} data-testid="zone-npcs">
+        街坊探索 {z.npcs}/{z.npcTotal}
+      </span>
+      <span className={`chip${z.goals === z.goalTotal ? ' done' : ''}`} data-testid="zone-goals">
+        服務索引 {z.goals}/{z.goalTotal}
+      </span>
+      <button type="button" className="ghost" onClick={() => openIsland(island.id)}>
+        區域介紹
+      </button>
+      <button type="button" className="ghost" onClick={showMap} data-testid="show-map">
+        返回地圖
+      </button>
+    </div>
+  )
+}
+
+// Conversation with a zone resident; ends with a link to the related service card.
+export function NpcDialog() {
+  const npcId = useGame((s) => s.talkNpcId)
+  const close = useGame((s) => s.closeNpc)
+  const openGoal = useGame((s) => s.openGoal)
+  const [line, setLine] = useState(0)
+  useEffect(() => setLine(0), [npcId])
+  const npc = NPCS.find((n) => n.id === npcId)
+  if (!npc) return null
+  const island = islandById(npc.islandId)
+  const goal = ALL_GOALS.find((g) => g.id === npc.goalId)
+  const hasMore = line < npc.lines.length - 1
+  return (
+    <div className="talk" role="dialog" aria-label={`${npc.role} 對話`} data-testid="npc-talk">
+      <div className="npc-avatar" style={{ background: npc.color }} aria-hidden>
+        {npc.look === 'worker' ? '👷' : npc.look === 'engineer' ? '🧑‍🔧' : npc.look === 'coat' ? '🧑‍🔬' : npc.look === 'suit' ? '🧑‍💼' : '🙂'}
+      </div>
+      <div className="talk-bubble">
+        <p className="kicker">
+          {npc.role} · 在{island?.name}
+        </p>
+        <p className="talk-text" data-testid="npc-text">
+          {npc.lines[line]}
+        </p>
+        <div className="talk-actions">
+          {hasMore ? (
+            <button type="button" className="cta" onClick={() => setLine(line + 1)} data-testid="npc-next">
+              下一句
+            </button>
+          ) : (
+            goal && (
+              <button
+                type="button"
+                className="cta"
+                onClick={() => {
+                  openGoal(goal.id)
+                  close()
+                }}
+                data-testid="npc-goal"
+              >
+                看「{goal.title}」
+              </button>
+            )
+          )}
+          <button type="button" className="ghost" onClick={close} data-testid="npc-close">
+            再見
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }

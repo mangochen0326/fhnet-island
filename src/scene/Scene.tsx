@@ -4,7 +4,9 @@ import { Suspense, useEffect } from 'react'
 import { ISLANDS } from '../data/islands'
 import { useGame, type TimeOfDay } from '../store/useGame'
 import { Bridges } from './Bridges'
+import { CameraRig } from './CameraRig'
 import { Island } from './Island'
+import { Npcs } from './Npcs'
 import { WORLD } from './layout'
 import { Paul } from './Paul'
 import { Player } from './Player'
@@ -34,6 +36,7 @@ function useKeyboard() {
       else if (e.code === 'Escape') {
         const s = useGame.getState()
         if (s.talkOpen) s.closeTalk()
+        else if (s.talkNpcId) s.closeNpc()
         else if (s.selectedGoalId) s.closeGoal()
         else if (s.selectedIslandId) s.closeIsland()
       } else runtime.keys.add(e.code)
@@ -59,7 +62,7 @@ export function Scene() {
   return (
     <Canvas shadows camera={{ position: window.innerWidth > 820 ? [0, 22, 30] : [0, 34, 44], fov: 45, near: 0.5, far: 400 }} dpr={[1, 1.5]} data-testid="scene">
       <color attach="background" args={[light.sky]} />
-      <fog attach="fog" args={[light.sky, 70, 160]} />
+      <fog attach="fog" args={[light.sky, 90, 200]} />
       <ambientLight intensity={light.ambient} />
       <hemisphereLight args={[light.sky, '#6b8f5a', 0.35]} />
       <directionalLight
@@ -84,8 +87,10 @@ export function Scene() {
         <Bridges onGround={handleGround} />
         <Player />
         <Paul />
+        <Npcs />
       </Suspense>
-      <OrbitControls makeDefault target={[0, 0, 4]} enablePan={false} minDistance={10} maxDistance={90} maxPolarAngle={1.3} minPolarAngle={0.35} />
+      <CameraRig />
+      <OrbitControls makeDefault target={[0, 0, 4]} enablePan={false} minDistance={10} maxDistance={110} maxPolarAngle={1.3} minPolarAngle={0.35} />
     </Canvas>
   )
 }

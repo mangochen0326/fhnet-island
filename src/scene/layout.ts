@@ -33,3 +33,10 @@ export function soapboxSpot(island: Island): Vec2 {
 export const GOAL_SPOTS: { id: string; islandId: string; no: number; pos: Vec2 }[] = ISLANDS.flatMap((island) =>
   goalSpots(island).map((pos, k) => ({ id: island.goals[k].id, islandId: island.id, no: k + 1, pos })),
 )
+
+// NPC home spots sit between goal props, away from the bridge path.
+export function npcAnchors(island: Island, count: number): Vec2[] {
+  const base = towardLink(island)
+  const step = (Math.PI * 2) / island.goals.length
+  return Array.from({ length: count }, (_, j) => polar(ISLAND_POS[island.id], base + step * (j + 1), island.r * 0.42))
+}

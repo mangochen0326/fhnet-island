@@ -8,4 +8,5 @@ export const runtime = {
   paul: new Vector3(),
   path: [] as Vec2[],
   keys: new Set<string>(),
+  npcs: new Map<string, Vector3>(),
 }
