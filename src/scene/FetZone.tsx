@@ -3,6 +3,7 @@ import type { ThreeEvent } from '@react-three/fiber'
 import { FET } from '../data/scenic'
 import { useGame } from '../store/useGame'
 import { ISLAND_POS, ringSpots } from './layout'
+import { FET_LOGO, LogoSign } from './Logo'
 import { Ball, Box, Cyl, Tree } from './props'
 
 const RED = FET.color
@@ -30,10 +31,16 @@ function Tower() {
         <Box key={y} p={[0, y, 1.42]} s={[2.4, 0.5, 0.04]} c="#9fd4e6" />
       ))}
       <Box p={[0, 7.4, 0]} s={[3, 0.4, 3]} c={RED} />
-      {[-0.8, 0.8].map((x) => (
-        <Cyl key={x} p={[x, 8.4, 0]} r={0.06} h={1.8} c="#c0c6cc" />
+      {/* Rooftop crown with the FarEasTone logo on all four sides */}
+      {[0, 1, 2, 3].map((k) => (
+        <group key={k} rotation={[0, (k * Math.PI) / 2, 0]}>
+          <group position={[0, 8.25, 1.42]}>
+            <LogoSign width={2.8} logo={FET_LOGO} />
+          </group>
+        </group>
       ))}
-      <Ball p={[0.8, 9.35, 0]} r={0.12} c="#ff4d4d" e />
+      <Cyl p={[0.8, 9.6, 0]} r={0.06} h={1.2} c="#c0c6cc" />
+      <Ball p={[0.8, 10.25, 0]} r={0.12} c="#ff4d4d" e />
       <Box p={[0, 0.9, 1.6]} s={[1.4, 1.8, 0.3]} c={RED} />
     </group>
   )
@@ -124,6 +131,10 @@ export function FetZone({ onGround }: { onGround: (e: ThreeEvent<MouseEvent>) =>
   // Props on an outer ring between the resident spots (which sit at multiples of 72°).
   const [idc, mast, plaza, pole, garden] = ringSpots(FET, 5, FET.r * 0.66, Math.PI / 5)
   const at = (p: { x: number; z: number }) => [p.x - pos.x, 0.05, p.z - pos.z] as [number, number, number]
+  // Logo monument beside the bridge landing, facing visitors arriving from HQ.
+  const [gate] = ringSpots(FET, 1, FET.r * 0.76, 0.25)
+  const hq = ISLAND_POS[FET.link]
+  const gateYaw = Math.atan2(hq.x - gate.x, hq.z - gate.z)
 
   return (
     <group position={[pos.x, 0, pos.z]}>
@@ -160,8 +171,16 @@ export function FetZone({ onGround }: { onGround: (e: ThreeEvent<MouseEvent>) =>
       <group position={at(garden)}>
         <EsgGarden />
       </group>
+      <group position={at(gate)} rotation={[0, gateYaw, 0]}>
+        {[-1.2, 1.2].map((x) => (
+          <Box key={x} p={[x, 0.4, 0]} s={[0.2, 0.8, 0.2]} c="#c0c6cc" />
+        ))}
+        <group position={[0, 1.5, 0]}>
+          <LogoSign width={3} depth={0.2} both logo={FET_LOGO} />
+        </group>
+      </group>
 
-      <Html position={[0, 10.6, 0]} center zIndexRange={[30, 0]}>
+      <Html position={[0, 11.4, 0]} center zIndexRange={[30, 0]}>
         <button type="button" className="island-tag kind-group" onClick={() => travelTo(FET.id)} data-testid="fet-tag">
           <span className="island-no">{FET.badge}</span>
           {FET.name}
