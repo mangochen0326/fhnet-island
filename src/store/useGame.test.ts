@@ -151,10 +151,11 @@ describe('zones', () => {
     expect(useGame.getState().view).toEqual({ mode: 'map', islandId: null, seq: 2 })
   })
 
-  it('a scenic area gets a zone view but no island stamp', () => {
+  it('scenic and group areas get a zone view but no island stamp', () => {
     useGame.getState().setCurrentIsland('riverside')
+    useGame.getState().setCurrentIsland('fet')
     const s = useGame.getState()
-    expect(s.view).toEqual({ mode: 'zone', islandId: 'riverside', seq: 1 })
+    expect(s.view).toEqual({ mode: 'zone', islandId: 'fet', seq: 2 })
     expect(s.visitedIslands).toEqual([])
   })
 

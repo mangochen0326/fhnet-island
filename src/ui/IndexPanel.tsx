@@ -69,27 +69,31 @@ function IslandList() {
           </section>
         ) : null,
       )}
-      {scenic.length > 0 && (
-        <section>
-          <h3 className="section-title">景點</h3>
-          <ul className="index-list">
-            {scenic.map((a) => (
-              <li key={a.id}>
-                <button type="button" className="index-row" onClick={() => travelTo(a.id)} data-testid={`scenic-row-${a.id}`}>
-                  <span className="index-no" style={{ color: a.color }}>
-                    ✈
-                  </span>
-                  <span className="index-text">
-                    <strong>{a.name}</strong>
-                    <small>{a.tagline}</small>
-                  </span>
-                  <span className="index-count">走過去 ↗</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {(['group', 'scenic'] as const).map((kind) => {
+        const list = scenic.filter((a) => a.kind === kind)
+        if (!list.length) return null
+        return (
+          <section key={kind}>
+            <h3 className="section-title">{kind === 'group' ? '母公司' : '景點'}</h3>
+            <ul className="index-list">
+              {list.map((a) => (
+                <li key={a.id}>
+                  <button type="button" className="index-row" onClick={() => travelTo(a.id)} data-testid={`scenic-row-${a.id}`}>
+                    <span className="index-no" style={{ color: a.color }}>
+                      {a.kind === 'group' ? '◆' : '✈'}
+                    </span>
+                    <span className="index-text">
+                      <strong>{a.name}</strong>
+                      <small>{a.tagline}</small>
+                    </span>
+                    <span className="index-count">走過去 ↗</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      })}
       {ids.size === 0 && scenic.length === 0 && <p className="muted empty">找不到「{query}」相關的服務，換個關鍵字試試。</p>}
     </>
   )

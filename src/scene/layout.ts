@@ -40,12 +40,20 @@ export const GOAL_SPOTS: { id: string; islandId: string; no: number; pos: Vec2 }
   goalSpots(island).map((pos, k) => ({ id: island.goals[k].id, islandId: island.id, no: k + 1, pos })),
 )
 
-// NPC home spots sit between goal props (or on quarter points of a scenic area),
+// NPC home spots sit between goal props (or evenly around a scenic area),
 // away from the bridge path.
 export function npcAnchors(area: Linked & { goals?: unknown[] }, count: number): Vec2[] {
   const base = towardLink(area)
-  const step = (Math.PI * 2) / (area.goals?.length ?? 4)
+  // Without goals, spread residents evenly and leave the bridge direction free.
+  const step = (Math.PI * 2) / (area.goals?.length ?? count + 1)
   return Array.from({ length: count }, (_, j) => polar(ISLAND_POS[area.id], base + step * (j + 1), area.r * 0.42))
+}
+
+// Spots on a ring around an area, offset from the bridge direction (radians), for props.
+export function ringSpots(area: Linked, count: number, radius: number, offset = 0): Vec2[] {
+  const base = towardLink(area)
+  const step = (Math.PI * 2) / count
+  return Array.from({ length: count }, (_, k) => polar(ISLAND_POS[area.id], base + offset + step * k, radius))
 }
 
 // Unit vectors for the riverside scene: `out` points away from HQ across the river,

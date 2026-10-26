@@ -1,3 +1,5 @@
+import { FET_ENTERPRISE, FET_SITE } from './scenic'
+
 // Residents of each business zone. Lines are paraphrased from the FHNet official
 // site knowledge base; `goalId` links the talk to the matching service card.
 
@@ -11,6 +13,8 @@ export type Npc = {
   color: string
   lines: string[]
   goalId?: string
+  // External page for residents outside FHNet, e.g. the parent company's site.
+  link?: { label: string; url: string }
 }
 
 export const NPCS: Npc[] = [
@@ -251,6 +255,52 @@ export const NPCS: Npc[] = [
     look: 'worker',
     color: '#1d6fb8',
     lines: ['我們台北總公司就在內湖堤頂大道二段 239 號 7 樓，沿著基隆河堤岸。', '業務聯絡電話 (02) 5582-8501，信箱 welcome@fhnet.com.tw。'],
+  },
+  // 母公司・遠傳電信
+  {
+    id: 'fet-group',
+    islandId: 'fet',
+    role: '集團服務專員',
+    look: 'suit',
+    color: '#d64550',
+    lines: [
+      '富鴻網是遠傳集團的一員！遠傳企業服務的「集團服務」裡，就列著數聯資安、博弘雲端科技、富鴻網和旭天能源。',
+      '富鴻網的主要股東包含遠傳電信、鴻海集團與中鋼集團，一起支持產業數位轉型。',
+    ],
+    link: { label: '遠傳企業服務', url: FET_ENTERPRISE },
+  },
+  {
+    id: 'fet-ai',
+    islandId: 'fet',
+    role: '企業 AI 顧問',
+    look: 'casual',
+    color: '#f2a65a',
+    lines: [
+      '遠傳的企業 AI 導入服務，為企業提供生成式 AI 的一站式服務。',
+      '我們用 5G「大人物」——大數據、人工智慧、物聯網——投入智慧醫療、智慧校園與低碳城市。',
+    ],
+    link: { label: '遠傳企業解決方案', url: FET_ENTERPRISE },
+  },
+  {
+    id: 'fet-idc',
+    islandId: 'fet',
+    role: 'IDC 機房經理',
+    look: 'engineer',
+    color: '#3f9fd9',
+    lines: ['旁邊這棟是遠傳 TPKC 雲端運算中心，取得 BSI ISO 20000 驗證。', '企業上雲、主機代管或 Microsoft 365，都能在遠傳企業服務找到。'],
+    link: { label: '遠傳企業服務', url: FET_ENTERPRISE },
+  },
+  {
+    id: 'fet-esg',
+    islandId: 'fet',
+    role: '永續專員',
+    look: 'casual',
+    color: '#5fb36b',
+    lines: [
+      '遠傳的願景是「生活有遠傳、溝通無距離、人生更豐富、地球更永續」。',
+      '2025 年遠傳獲 CDP 供應商議合評等「領導級 A 級」，也連續第 8 年入選臺灣永續指數成分股。',
+    ],
+    link: { label: '遠傳電信官網', url: FET_SITE },
   },
   {
     id: 'offices-desk',

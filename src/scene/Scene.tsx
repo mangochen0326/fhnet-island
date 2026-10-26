@@ -5,6 +5,7 @@ import { ISLANDS } from '../data/islands'
 import { useGame, type TimeOfDay } from '../store/useGame'
 import { Bridges } from './Bridges'
 import { CameraRig } from './CameraRig'
+import { FetZone } from './FetZone'
 import { Island } from './Island'
 import { Npcs } from './Npcs'
 import { WORLD } from './layout'
@@ -87,6 +88,7 @@ export function Scene() {
         ))}
         <Bridges onGround={handleGround} />
         <Riverside onGround={handleGround} />
+        <FetZone onGround={handleGround} />
         <Player />
         <Paul />
         <Npcs />

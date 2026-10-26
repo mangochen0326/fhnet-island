@@ -258,7 +258,7 @@ export function Passport() {
           {SCENIC_AREAS.map((area) => (
             <section key={area.id} className="stamp-card scenic" style={{ '--c': area.color } as CSSProperties}>
               <header>
-                <span className="stamp">景點</span>
+                <span className="stamp">{area.badge}</span>
                 <strong>{area.name}</strong>
               </header>
               <div className="stamp-goals">
@@ -327,12 +327,12 @@ export function ZoneHud() {
     return (
       <div className="zone-hud" style={{ '--c': scenic.color } as CSSProperties} data-testid="zone-hud">
         <span className="zone-title">
-          景點 · <strong>{scenic.name}</strong>
+          {scenic.badge} · <strong>{scenic.name}</strong>
         </span>
         <span className={`chip${z.npcs === z.npcTotal ? ' done' : ''}`} data-testid="zone-npcs">
           街坊探索 {z.npcs}/{z.npcTotal}
         </span>
-        <span className="zone-note">概念地景，非實際比例</span>
+        <span className="zone-note">{scenic.note}</span>
         <button type="button" className="ghost" onClick={showMap} data-testid="show-map">
           返回地圖
         </button>
@@ -397,6 +397,10 @@ export function NpcDialog() {
             <button type="button" className="cta" onClick={() => setLine(line + 1)} data-testid="npc-next">
               繼續聊
             </button>
+          ) : !goal && npc.link ? (
+            <a className="cta" href={npc.link.url} target="_blank" rel="noreferrer" data-testid="npc-link">
+              到{npc.link.label}看更多 ↗
+            </a>
           ) : (
             goal && (
               <button

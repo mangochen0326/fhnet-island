@@ -277,6 +277,30 @@ kbd {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+.island-tag.kind-group {
+  border-left-color: #d64550;
+}
+
+.island-tag.kind-group .island-no {
+  color: #ff8a8a;
+}
+
+.deco-tag.group-tags {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.deco-tag.group-tags em {
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #fff;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+}
+
 .island-tag.kind-scenic {
   border-left-color: #e8738a;
 }

@@ -185,3 +185,18 @@ test('the riverside park looks across the Keelung River to Songshan Airport', as
   await expect(page.getByTestId('zone-hud')).toContainText('內湖彩虹河濱公園', { timeout: 30_000 })
   await expect(page.getByTestId('zone-npcs')).toHaveText('街坊探索 0/3')
 })
+
+test('the FarEasTone zone introduces the parent company and links to its site', async ({ page, isMobile }) => {
+  await start(page)
+  await openPanel(page)
+  await page.getByTestId('scenic-row-fet').click()
+  await expect(page.getByTestId('zone-hud')).toContainText('遠傳電信', { timeout: 30_000 })
+  await expect(page.getByTestId('zone-hud')).toContainText('內容整理自遠傳電信官網')
+
+  if (isMobile) await page.getByRole('button', { name: /收合/ }).click()
+  await page.getByTestId('passport-button').click()
+  await page.getByTestId('passport').getByRole('button', { name: /集團服務專員/ }).click()
+  await expect(page.getByTestId('npc-text')).toContainText('富鴻網是遠傳集團的一員')
+  await page.getByTestId('npc-next').click()
+  await expect(page.getByTestId('npc-link')).toHaveAttribute('href', /enterprise\.fetnet\.net/)
+})
