@@ -1,5 +1,6 @@
-name: Pages
+name: CI
 
+# Tests only; Vercel deploys main on its own through its Git integration.
 on:
   push:
     branches: [main]
@@ -8,11 +9,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -38,18 +37,3 @@ jobs:
         with:
           name: playwright-report
           path: test-results
-      - uses: actions/upload-pages-artifact@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          path: dist
-
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: test
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

@@ -2,13 +2,13 @@
 
 以 3D 島嶼逛遍富鴻網（FHNet）的六大解決方案與延伸服務。概念參考 [桃園政策島](https://quinnyhuang.github.io/taoyuan-policy-island/)，程式碼為獨立撰寫（原站未附授權條款，因此沒有複製其原始碼）。
 
-- 線上展示：https://mangochen0326.github.io/fhnet-island/
+- 線上展示：https://fhnet-island.vercel.app/
 - 內容來源：富鴻網官網知識庫（與官網 AI 小幫手「小Paul」相同的資料，`fhnet-static-site` 的 `kb/fhnet-site.json`），整理在 `src/data/`
 - 標示為 **Demo 展示**，詳細資訊以 [富鴻網官網](https://www.fhnet.com.tw) 為準
 
 ## 技術
 
-React 19、three.js（`@react-three/fiber` + `drei`）、zustand、Vite；Vitest 單元測試、Playwright 端對端測試；GitHub Actions 部署到 GitHub Pages。
+React 19、three.js（`@react-three/fiber` + `drei`）、zustand、Vite；Vitest 單元測試、Playwright 端對端測試；Vercel 部署，GitHub Actions 只跑測試。
 
 | 目錄 | 內容 |
 |---|---|
@@ -25,7 +25,7 @@ React 19、three.js（`@react-three/fiber` + `drei`）、zustand、Vite；Vitest
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:5173/fhnet-island/
+pnpm dev          # http://localhost:5173/
 pnpm test         # Vitest
 pnpm e2e          # Playwright 桌機＋手機（首次先 pnpm exec playwright install chromium）；CI 只跑桌機
 pnpm build
@@ -33,11 +33,9 @@ pnpm build
 
 ## 部署
 
-- Vercel：連動此 repo 後自動部署（`vercel.json`；在 Vercel 上 base 自動為 `/`）。
-- GitHub Pages：見下方。
+只部署到 Vercel：專案 `fhnet-island` 已連動此 repo，推到 `main` 會自動部署到 https://fhnet-island.vercel.app/ ，PR 會產生預覽網址（設定見 `vercel.json`）。
 
-
-推到 `main` 後，`.github/workflows/pages.yml` 會跑型別檢查、單元與 E2E 測試，再部署到 GitHub Pages（repo 的 Settings → Pages → Source 需設為 GitHub Actions）。若 repo 名稱不是 `fhnet-island`，以 `BASE_PATH=/<repo>/` 建置。
+`.github/workflows/ci.yml` 只跑型別檢查、單元測試與桌機 E2E，不負責部署。網站預設放在網域根目錄；要放在子路徑時以 `BASE_PATH=/<path>/` 建置。
 
 ## 修改內容
 

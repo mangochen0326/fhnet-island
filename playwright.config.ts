@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: 'http://127.0.0.1:4173/fhnet-island/',
+    baseURL: 'http://127.0.0.1:4173/',
     trace: 'retain-on-failure',
   },
   projects: [
@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'pnpm build && pnpm preview --port 4173 --strictPort --host 127.0.0.1',
-    url: 'http://127.0.0.1:4173/fhnet-island/',
+    url: 'http://127.0.0.1:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
