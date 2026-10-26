@@ -8,6 +8,10 @@ const VIEWS = {
   zone: { radius: 22, phi: 0.95 },
   map: { radius: 82, phi: 0.62 },
 }
+// Wider shots for zones whose scenery lies beyond the island itself.
+const ZONE_OVERRIDES: Record<string, { radius: number; phi: number }> = {
+  riverside: { radius: 38, phi: 0.85 },
+}
 const DURATION = 0.9
 
 // Eases the orbit camera between zone and map views while keeping its heading.
@@ -20,7 +24,7 @@ export function CameraRig() {
   useEffect(() => {
     if (!controls || view.seq === 0) return
     const from = new Spherical().setFromVector3(camera.position.clone().sub(controls.target))
-    const goal = VIEWS[view.mode]
+    const goal = (view.mode === 'zone' && view.islandId && ZONE_OVERRIDES[view.islandId]) || VIEWS[view.mode]
     anim.current = { from, to: new Spherical(goal.radius, goal.phi, from.theta), t: 0 }
   }, [view, camera, controls])
 

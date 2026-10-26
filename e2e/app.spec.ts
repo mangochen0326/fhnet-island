@@ -175,3 +175,13 @@ test('opening a dialog stops a walk in progress', async ({ page, isMobile }) => 
   await expect(page.getByTestId('npc-talk')).toBeVisible()
   expect(await playerPos(page)).toEqual(pos)
 })
+
+test('the riverside park looks across the Keelung River to Songshan Airport', async ({ page }) => {
+  await start(page)
+  await expect(page.getByText('TSA 臺北松山機場')).toBeAttached()
+  await expect(page.getByText('彩虹橋')).toBeAttached()
+  await openPanel(page)
+  await page.getByTestId('scenic-row-riverside').click()
+  await expect(page.getByTestId('zone-hud')).toContainText('內湖彩虹河濱公園', { timeout: 30_000 })
+  await expect(page.getByTestId('zone-npcs')).toHaveText('街坊探索 0/3')
+})

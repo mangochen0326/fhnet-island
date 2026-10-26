@@ -1,4 +1,5 @@
 import { ALL_GOALS, ISLANDS, searchIslands, type Island } from '../data/islands'
+import { SCENIC_AREAS } from '../data/scenic'
 import { useGame } from '../store/useGame'
 
 function IslandRow({ island }: { island: Island }) {
@@ -28,6 +29,9 @@ function IslandList() {
   const query = useGame((s) => s.query)
   const setQuery = useGame((s) => s.setQuery)
   const ids = new Set(searchIslands(query))
+  const q = query.trim().toLowerCase()
+  const scenic = SCENIC_AREAS.filter((a) => !q || `${a.name}${a.tagline}`.toLowerCase().includes(q))
+  const travelTo = useGame((s) => s.travelTo)
   const group = (kind: Island['kind']) => ISLANDS.filter((i) => i.kind === kind && ids.has(i.id))
   const sections: [string, Island[]][] = [
     ['總部', group('hub')],
@@ -65,7 +69,28 @@ function IslandList() {
           </section>
         ) : null,
       )}
-      {ids.size === 0 && <p className="muted empty">找不到「{query}」相關的服務，換個關鍵字試試。</p>}
+      {scenic.length > 0 && (
+        <section>
+          <h3 className="section-title">景點</h3>
+          <ul className="index-list">
+            {scenic.map((a) => (
+              <li key={a.id}>
+                <button type="button" className="index-row" onClick={() => travelTo(a.id)} data-testid={`scenic-row-${a.id}`}>
+                  <span className="index-no" style={{ color: a.color }}>
+                    ✈
+                  </span>
+                  <span className="index-text">
+                    <strong>{a.name}</strong>
+                    <small>{a.tagline}</small>
+                  </span>
+                  <span className="index-count">走過去 ↗</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {ids.size === 0 && scenic.length === 0 && <p className="muted empty">找不到「{query}」相關的服務，換個關鍵字試試。</p>}
     </>
   )
 }

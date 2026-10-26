@@ -98,7 +98,11 @@ export const useGame = create<GameState>()(
       closeGoal: () => set({ selectedGoalId: null }),
       setQuery: (query) => set({ query }),
 
-      visitIsland: (id) => set(({ visitedIslands }) => ({ visitedIslands: addOnce(visitedIslands, id) })),
+      // Only real islands earn passport stamps; scenic areas such as the riverside park don't.
+      visitIsland: (id) => {
+        if (!ISLANDS.some((i) => i.id === id)) return
+        set(({ visitedIslands }) => ({ visitedIslands: addOnce(visitedIslands, id) }))
+      },
       setCurrentIsland: (id) => {
         if (get().currentIslandId === id) return
         set({ currentIslandId: id })

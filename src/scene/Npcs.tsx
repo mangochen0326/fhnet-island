@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import { Vector3, type Group } from 'three'
 import { islandById } from '../data/islands'
+import { scenicById } from '../data/scenic'
 import { NPCS, npcsOf, type Npc } from '../data/npcs'
 import type { Vec2 } from '../lib/world'
 import { useGame } from '../store/useGame'
@@ -133,8 +134,8 @@ export function Npcs() {
     const byIsland = new Map<string, Vec2[]>()
     return NPCS.map((npc, seed) => {
       if (!byIsland.has(npc.islandId)) {
-        const island = islandById(npc.islandId)!
-        byIsland.set(npc.islandId, npcAnchors(island, npcsOf(npc.islandId).length))
+        const area = islandById(npc.islandId) ?? scenicById(npc.islandId)!
+        byIsland.set(npc.islandId, npcAnchors(area, npcsOf(npc.islandId).length))
       }
       const index = npcsOf(npc.islandId).indexOf(npc)
       return { npc, seed, home: byIsland.get(npc.islandId)![index] }

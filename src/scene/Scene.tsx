@@ -10,6 +10,7 @@ import { Npcs } from './Npcs'
 import { WORLD } from './layout'
 import { Paul } from './Paul'
 import { Player } from './Player'
+import { Riverside } from './Riverside'
 import { runtime } from './runtime'
 
 const LIGHTING: Record<TimeOfDay, { sky: string; water: string; ambient: number; sun: number; sunColor: string; sunPos: [number, number, number] }> = {
@@ -85,6 +86,7 @@ export function Scene() {
           <Island key={island.id} island={island} onGround={handleGround} />
         ))}
         <Bridges onGround={handleGround} />
+        <Riverside onGround={handleGround} />
         <Player />
         <Paul />
         <Npcs />

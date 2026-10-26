@@ -3,6 +3,7 @@ import { FAQ } from '../data/faq'
 import { ALL_GOALS, ISLANDS, SITE, islandById } from '../data/islands'
 import { INTRO_STEPS } from '../data/intro'
 import { NPCS, npcsOf } from '../data/npcs'
+import { SCENIC_AREAS, scenicById } from '../data/scenic'
 import { progress, useGame, zoneProgress, type TimeOfDay } from '../store/useGame'
 
 const BASE = import.meta.env.BASE_URL
@@ -254,6 +255,29 @@ export function Passport() {
               </div>
             </section>
           ))}
+          {SCENIC_AREAS.map((area) => (
+            <section key={area.id} className="stamp-card scenic" style={{ '--c': area.color } as CSSProperties}>
+              <header>
+                <span className="stamp">景點</span>
+                <strong>{area.name}</strong>
+              </header>
+              <div className="stamp-goals">
+                {npcsOf(area.id).map((n) => (
+                  <button
+                    key={n.id}
+                    type="button"
+                    className={`npc${talked.includes(n.id) ? ' on' : ''}`}
+                    onClick={() => {
+                      openNpc(n.id)
+                      setOpen(false)
+                    }}
+                  >
+                    💬 {n.role}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
         <div className="modal-actions">
           <button type="button" className="ghost" onClick={reset}>
@@ -297,6 +321,24 @@ export function ZoneHud() {
   const talkedNpcs = useGame((s) => s.talkedNpcs)
   const { showMap, openIsland } = useGame.getState()
   const island = view.mode === 'zone' && view.islandId ? islandById(view.islandId) : undefined
+  const scenic = view.mode === 'zone' && view.islandId ? scenicById(view.islandId) : undefined
+  if (scenic) {
+    const z = zoneProgress({ readGoals, talkedNpcs }, scenic.id)
+    return (
+      <div className="zone-hud" style={{ '--c': scenic.color } as CSSProperties} data-testid="zone-hud">
+        <span className="zone-title">
+          景點 · <strong>{scenic.name}</strong>
+        </span>
+        <span className={`chip${z.npcs === z.npcTotal ? ' done' : ''}`} data-testid="zone-npcs">
+          街坊探索 {z.npcs}/{z.npcTotal}
+        </span>
+        <span className="zone-note">概念地景，非實際比例</span>
+        <button type="button" className="ghost" onClick={showMap} data-testid="show-map">
+          返回地圖
+        </button>
+      </div>
+    )
+  }
   if (!island) {
     return view.seq > 0 ? (
       <div className="zone-hud is-map" data-testid="zone-hud">
@@ -335,7 +377,7 @@ export function NpcDialog() {
   useEffect(() => setLine(0), [npcId])
   const npc = NPCS.find((n) => n.id === npcId)
   if (!npc) return null
-  const island = islandById(npc.islandId)
+  const place = islandById(npc.islandId) ?? scenicById(npc.islandId)
   const goal = ALL_GOALS.find((g) => g.id === npc.goalId)
   const hasMore = line < npc.lines.length - 1
   return (
@@ -345,7 +387,7 @@ export function NpcDialog() {
       </div>
       <div className="talk-bubble">
         <p className="kicker">
-          {npc.role} · 在{island?.name}
+          {npc.role} · 在{place?.name}
         </p>
         <p className="talk-text" data-testid="npc-text">
           {npc.lines[line]}

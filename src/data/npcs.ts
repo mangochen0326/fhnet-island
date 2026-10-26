@@ -227,6 +227,31 @@ export const NPCS: Npc[] = [
     lines: ['富鴻網承諾 2050 年營運據點淨零碳排，每年都做溫室氣體盤查。', '我們也揭露了保護生物多樣性宣言。'],
     goalId: 'esg-netzero',
   },
+  // 內湖彩虹河濱公園（景點）
+  {
+    id: 'riverside-spotter',
+    islandId: 'riverside',
+    role: '觀機攝影師',
+    look: 'casual',
+    color: '#5fb3e8',
+    lines: ['在河濱公園抬頭，就能看到對岸松山機場的飛機起降。', '飛機貼著基隆河上空飛過時最壯觀，記得把相機準備好！'],
+  },
+  {
+    id: 'riverside-cyclist',
+    islandId: 'riverside',
+    role: '單車騎士',
+    look: 'engineer',
+    color: '#e8738a',
+    lines: ['彩虹橋是連接內湖彩虹河濱公園和松山饒河街的人行橋，晚上點燈很漂亮。', '基隆河畔有自行車道，騎車、散步都很舒服。'],
+  },
+  {
+    id: 'riverside-engineer',
+    islandId: 'riverside',
+    role: '富鴻網工程師',
+    look: 'worker',
+    color: '#1d6fb8',
+    lines: ['我們台北總公司就在內湖堤頂大道二段 239 號 7 樓，沿著基隆河堤岸。', '業務聯絡電話 (02) 5582-8501，信箱 welcome@fhnet.com.tw。'],
+  },
   {
     id: 'offices-desk',
     islandId: 'offices',

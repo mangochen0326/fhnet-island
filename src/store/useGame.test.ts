@@ -151,6 +151,13 @@ describe('zones', () => {
     expect(useGame.getState().view).toEqual({ mode: 'map', islandId: null, seq: 2 })
   })
 
+  it('a scenic area gets a zone view but no island stamp', () => {
+    useGame.getState().setCurrentIsland('riverside')
+    const s = useGame.getState()
+    expect(s.view).toEqual({ mode: 'zone', islandId: 'riverside', seq: 1 })
+    expect(s.visitedIslands).toEqual([])
+  })
+
   it('reports zone progress for NPCs and goals', () => {
     useGame.getState().openNpc('mfg-qc')
     useGame.getState().openGoal('mfg-ai')

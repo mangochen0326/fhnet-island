@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { ALL_GOALS, ISLANDS } from './islands'
 import { NPCS, npcsOf } from './npcs'
+import { scenicById } from './scenic'
 
 describe('NPC data', () => {
   it('uses unique ids', () => {
     expect(new Set(NPCS.map((n) => n.id)).size).toBe(NPCS.length)
   })
 
-  it('places every NPC on an existing island and links real goals', () => {
+  it('places every NPC on an existing island or scenic area and links real goals', () => {
     const islands = new Set(ISLANDS.map((i) => i.id))
     const goals = new Set(ALL_GOALS.map((g) => g.id))
     for (const n of NPCS) {
-      expect(islands.has(n.islandId)).toBe(true)
+      expect(islands.has(n.islandId) || scenicById(n.islandId) !== undefined).toBe(true)
       if (n.goalId) expect(goals.has(n.goalId)).toBe(true)
       expect(n.lines.length).toBeGreaterThan(0)
     }

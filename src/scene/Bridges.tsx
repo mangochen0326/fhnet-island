@@ -1,14 +1,15 @@
 import type { ThreeEvent } from '@react-three/fiber'
-import { islandById } from '../data/islands'
 import { BRIDGE_HALF_WIDTH } from '../lib/world'
 import { WORLD } from './layout'
+
+const RADIUS: Record<string, number> = Object.fromEntries(WORLD.islands.map((i) => [i.id, i.r]))
 
 export function Bridges({ onGround }: { onGround: (e: ThreeEvent<MouseEvent>) => void }) {
   return (
     <>
       {WORLD.bridges.map((b) => {
-        const ra = islandById(b.from)!.r * 0.8
-        const rb = islandById(b.to)!.r * 0.8
+        const ra = RADIUS[b.from] * 0.8
+        const rb = RADIUS[b.to] * 0.8
         const dx = b.b.x - b.a.x
         const dz = b.b.z - b.a.z
         const d = Math.hypot(dx, dz)
