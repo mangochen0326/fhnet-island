@@ -200,3 +200,9 @@ test('the FarEasTone zone introduces the parent company and links to its site', 
   await page.getByTestId('npc-next').click()
   await expect(page.getByTestId('npc-link')).toHaveAttribute('href', /enterprise\.fetnet\.net/)
 })
+
+test('HQ shows the company logo', async ({ page }) => {
+  const logo = page.waitForResponse((r) => r.url().endsWith('/fhnet-logo.svg'))
+  await page.goto('./')
+  expect((await logo).ok()).toBe(true)
+})

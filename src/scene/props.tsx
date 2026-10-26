@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef, type ReactNode } from 'react'
 import type { Group } from 'three'
+import { LogoSign } from './Logo'
 
 // Low-poly building blocks. Positions are local to the prop's group.
 type V3 = [number, number, number]
@@ -75,10 +76,27 @@ export function Landmark({ id }: { id: string }) {
           <Box p={[0, 3, 0]} s={[3, 6, 3]} c="#3d6fb6" />
           <Windows w={3} h={6} d={3} rows={7} />
           <Box p={[0, 6.4, 0]} s={[2, 0.8, 2]} c="#2b4f86" />
-          <Cyl p={[0, 7.6, 0]} r={0.06} h={1.6} c="#ccc" />
-          <Ball p={[0, 8.5, 0]} r={0.18} c="#ff6b5a" e />
+          {/* Rooftop crown with the company logo on all four sides */}
+          {[0, 1, 2, 3].map((k) => (
+            <group key={k} rotation={[0, (k * Math.PI) / 2, 0]}>
+              <group position={[0, 7.6, 1.45]}>
+                <LogoSign width={2.9} />
+              </group>
+            </group>
+          ))}
+          <Cyl p={[0, 8.9, 0]} r={0.06} h={1.2} c="#ccc" />
+          <Ball p={[0, 9.6, 0]} r={0.18} c="#ff6b5a" e />
           <Box p={[2.6, 1, 0]} s={[2.2, 2, 2.4]} c="#7aa3dc" />
           <Box p={[-2.6, 0.8, 0.4]} s={[2, 1.6, 2]} c="#a9c4ea" />
+          {/* Logo monument at the plaza entrance, readable from both sides */}
+          <group position={[2.4, 0, 7.4]}>
+            {[-1.3, 1.3].map((x) => (
+              <Box key={x} p={[x, 0.45, 0]} s={[0.2, 0.9, 0.2]} c="#8a9aa8" />
+            ))}
+            <group position={[0, 1.75, 0]}>
+              <LogoSign width={3.2} depth={0.2} both />
+            </group>
+          </group>
         </group>
       )
     case 'city':

@@ -69,7 +69,7 @@ export function Island({ island, onGround }: { island: IslandData; onGround: (e:
         <Tree key={k} p={[Math.sin(a) * island.r * 0.82, 0, -Math.cos(a) * island.r * 0.82]} s={0.55 + (k % 3) * 0.15} />
       ))}
 
-      <Html position={[0, island.kind === 'hub' ? 9.5 : 7, 0]} center zIndexRange={[30, 0]}>
+      <Html position={[0, island.kind === 'hub' ? 10.6 : 7, 0]} center zIndexRange={[30, 0]}>
         <button type="button" className={`island-tag kind-${island.kind}`} style={{ '--c': island.color } as CSSProperties} onClick={() => openIsland(island.id)}>
           <span className="island-no">{island.no}</span>
           {island.name}
