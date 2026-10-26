@@ -150,7 +150,7 @@ export function TalkDialog() {
         <div className="talk-actions">
           {hasMore && (
             <button type="button" className="cta" onClick={() => setLine(line + 1)}>
-              下一句
+              繼續聊
             </button>
           )}
           {faq && (
@@ -353,7 +353,7 @@ export function NpcDialog() {
         <div className="talk-actions">
           {hasMore ? (
             <button type="button" className="cta" onClick={() => setLine(line + 1)} data-testid="npc-next">
-              下一句
+              繼續聊
             </button>
           ) : (
             goal && (
