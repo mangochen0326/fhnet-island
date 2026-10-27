@@ -37,6 +37,20 @@ pnpm build
 
 `.github/workflows/ci.yml` 只跑型別檢查、單元測試與桌機 E2E，不負責部署。網站預設放在網域根目錄；要放在子路徑時以 `BASE_PATH=/<path>/` 建置。
 
+## 分享縮圖
+
+`index.html` 的 Open Graph／Twitter 標籤讓 LINE、Facebook、Slack 等分享連結時顯示縮圖，圖片是 `public/og-image.png`（1200×630）。畫面改版後重新產生：
+
+```bash
+pnpm build && pnpm preview --port 4173
+```
+
+```bash
+node scripts/og-image.mjs
+```
+
+換網域時記得同步修改 `og:url`、`og:image`、`twitter:image` 的完整網址。
+
 ## 修改內容
 
 服務文字在 `src/data/islands.ts`（每座島的 `goals`）；新增服務時，`src/scene/props.tsx` 的 `GoalProp` 以 goal id 對應 3D 模型，沒有對應時會顯示預設方塊。

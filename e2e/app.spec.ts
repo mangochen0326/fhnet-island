@@ -208,3 +208,15 @@ test('HQ and the FarEasTone zone show their company logos', async ({ page }) => 
   expect((await fhnet).ok()).toBe(true)
   expect((await fet).ok()).toBe(true)
 })
+
+test('link previews have Open Graph tags and a reachable image', async ({ page, request }) => {
+  await page.goto('./')
+  const image = await page.locator('meta[property="og:image"]').getAttribute('content')
+  expect(image).toBe('https://fhnet-island.vercel.app/og-image.png')
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /富鴻網解決方案島/)
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
+  // The image is served from this build too, so check it locally.
+  const res = await request.get('og-image.png')
+  expect(res.ok()).toBe(true)
+  expect(res.headers()['content-type']).toContain('image/png')
+})
